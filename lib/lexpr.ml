@@ -5,6 +5,8 @@ type 'a t = [
   | `Num of int
   | `Add of 'a * 'a
   | `Mult of 'a * 'a
+  | `Str of string
+  | `Cat of 'a * 'a
 ]
 
 let eval eval_rec env : 'a t -> 'a = function
@@ -15,4 +17,7 @@ let rec eval3 env = eval eval3 env
 let e3 = eval3 [] (`App (`Abs ("x", `Add (`Var "x", `Var "x")), `Num 2))
 let e3' = eval3 ["double", `Abs ("x", `Add (`Var "x", `Var "x"))] (
   `App (`Var "double", `App (`Var "double", `Num 2))
+)
+let e3'' = eval3 ["double", `Abs ("x", `Cat (`Var "x", `Var "x"))] (
+  `App (`Var "double", `App (`Var "double", `Str "z"))
 )
