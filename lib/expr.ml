@@ -26,3 +26,21 @@ let eval eval_rec env (e : 'a t) : 'a =
 
 let rec eval2 env = eval eval2 env
 let e2 = eval2 ["x", `Var "x"] (`Add (`Mult (`Num 3, `Num 2), `Var "x"))
+
+let pp ppf e =
+  let rec aux level ppf e =
+    let bin op op_level e e' =
+      if level < op_level then Format.fprintf ppf "(";
+      let f = aux op_level in
+      Format.fprintf ppf "%a%c%a" f e op f e';
+      if level < op_level then Format.fprintf ppf ")"
+    in
+    match e with
+    | `Var v -> Format.fprintf ppf "%s" v
+    | `Num n -> Format.fprintf ppf "%d" n
+    | `Add (e, e') -> bin '+' 5 e e'
+    | `Mult (e, e') -> bin '*' 4 e e'
+    | `Str s -> Format.fprintf ppf "%S" s
+    | `Cat (e, e') -> bin '^' 5 e e'
+  in
+  aux 5 ppf e
